@@ -1,7 +1,7 @@
 ####
-# 'Referemce' Deployment:
+# 'Reference' Deployment:
 #
-# This sets up the build for the 'Ref' Application, including the custom reference
+# This sets up the build for the 'Reference' Application, including the custom reference
 # components. In addition, it imports FPrime.cmake, which includes the core F Prime
 # components.
 #
