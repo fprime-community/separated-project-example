@@ -1,22 +1,18 @@
-#ifndef REF_LPR_ATM_IMPL_HPP
-#define REF_LPR_ATM_IMPL_HPP
+#ifndef REFERENCE_LPR_ATM_IMPL_HPP
+#define REFERENCE_LPR_ATM_IMPL_HPP
 
 #include <Reference/RecvBuffApp/RecvBuffComponentAc.hpp>
 
 namespace Reference {
 
-    class RecvBuffImpl : public RecvBuffComponentBase {
+    class RecvBuff : public RecvBuffComponentBase {
         public:
 
             // Only called by derived class
-#if FW_OBJECT_NAMES == 1    
-            RecvBuffImpl(const char* compName);
-#else
-            RecvBuffImpl();
-#endif
-         
-            void init(void);
-            ~RecvBuffImpl(void);
+            RecvBuff(const char* compName);
+
+            void init(NATIVE_INT_TYPE instanceId = 0);
+            ~RecvBuff();
 
         private:
 

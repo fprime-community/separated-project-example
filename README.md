@@ -2,8 +2,8 @@
 An example where the project has been separated from the F´ standard distribution. This allows for
 cleaner separation of F´ code and the code of projects built using F´.
 
-**Note:** this may not be a complete example, or kept up with the `Ref` application in fprime, but
-it is here to demonstrait the basic functioning of seperated builds.
+**Note:** this may not be a complete example, or kept up with the `Ref` application in F Prime, but
+it is here to demonstrate the basic functioning of separated builds.
 
 ## Initialization
 
@@ -51,7 +51,7 @@ which requires a directory to work in. To generate a build directory, we will us
 F´ processses). This can be done with the following commands:
 
 ```
-cd ./Refence
+cd ./Reference
 fprime-util generate
 ```
 
