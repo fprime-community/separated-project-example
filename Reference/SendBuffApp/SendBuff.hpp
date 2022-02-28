@@ -1,5 +1,5 @@
-#ifndef REF_LPS_ATM_IMPL_HPP
-#define REF_LPS_ATM_IMPL_HPP
+#ifndef REFERENCE_LPS_ATM_IMPL_HPP
+#define REFERENCE_LPS_ATM_IMPL_HPP
 
 #include <Reference/SendBuffApp/SendBuffComponentAc.hpp>
 
@@ -7,17 +7,13 @@ namespace Reference {
 
     /// This component sends a data buffer to a driver each time it is invoked by a scheduler
 
-    class SendBuffImpl : public SendBuffComponentBase {
+    class SendBuff : public SendBuffComponentBase {
         public:
 
             // Only called by derived class
-#if FW_OBJECT_NAMES == 1    
-            SendBuffImpl(const char* compName); //!< constructor
-#else
-            SendBuffImpl(); //!< constructor
-#endif
+            SendBuff(const char* compName); //!< constructor
             void init(NATIVE_INT_TYPE queueDepth, NATIVE_INT_TYPE instance = 0); //!< initialization function
-            ~SendBuffImpl(void); //!< destructor
+            ~SendBuff(); //!< destructor
 
         private:
 
@@ -61,7 +57,7 @@ namespace Reference {
             void parameterUpdated(FwPrmIdType id); //!< Notification function for changed parameters
 
             // send state
-            ActiveState m_state;
+            SendBuff_ActiveState m_state;
 };
 
 }

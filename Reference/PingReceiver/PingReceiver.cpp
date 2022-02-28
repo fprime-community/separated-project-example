@@ -1,5 +1,5 @@
-// ====================================================================== 
-// \title  PingReceiverImpl.cpp
+// ======================================================================
+// \title  PingReceiver.cpp
 // \author tim
 // \brief  cpp file for PingReceiver component implementation class
 //
@@ -7,44 +7,38 @@
 // Copyright 2009-2015, by the California Institute of Technology.
 // ALL RIGHTS RESERVED.  United States Government Sponsorship
 // acknowledged.
-// 
-// ====================================================================== 
+//
+// ======================================================================
 
 
-#include <Reference/PingReceiver/PingReceiverComponentImpl.hpp>
+#include <Reference/PingReceiver/PingReceiver.hpp>
 #include "Fw/Types/BasicTypes.hpp"
 
 namespace Reference {
 
   // ----------------------------------------------------------------------
-  // Construction, initialization, and destruction 
+  // Construction, initialization, and destruction
   // ----------------------------------------------------------------------
 
-  PingReceiverComponentImpl ::
-#if FW_OBJECT_NAMES == 1
-    PingReceiverComponentImpl(
+  PingReceiver ::
+    PingReceiver(
         const char *const compName
-    ) :
-      PingReceiverComponentBase(compName)
-#else
-    PingReceiverImpl(void)
-#endif
-    ,m_inhibitPings(false),m_pingsRecvd(0)
+    ) : PingReceiverComponentBase(compName), m_inhibitPings(false), m_pingsRecvd(0)
   {
 
   }
 
-  void PingReceiverComponentImpl ::
+  void PingReceiver ::
     init(
         const NATIVE_INT_TYPE queueDepth,
         const NATIVE_INT_TYPE instance
-    ) 
+    )
   {
     PingReceiverComponentBase::init(queueDepth, instance);
   }
 
-  PingReceiverComponentImpl ::
-    ~PingReceiverComponentImpl(void)
+  PingReceiver ::
+    ~PingReceiver()
   {
 
   }
@@ -53,7 +47,7 @@ namespace Reference {
   // Handler implementations for user-defined typed input ports
   // ----------------------------------------------------------------------
 
-  void PingReceiverComponentImpl ::
+  void PingReceiver ::
     PingIn_handler(
         const NATIVE_INT_TYPE portNum,
         U32 key
@@ -66,12 +60,12 @@ namespace Reference {
     }
   }
 
-  void PingReceiverComponentImpl::PR_StopPings_cmdHandler(
+  void PingReceiver::PR_StopPings_cmdHandler(
           FwOpcodeType opCode, /*!< The opcode*/
           U32 cmdSeq /*!< The command sequence number*/
       ) {
       this->m_inhibitPings = true;
-      this->cmdResponse_out(opCode,cmdSeq,Fw::COMMAND_OK);
+      this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
   }
 
 } // end namespace Reference

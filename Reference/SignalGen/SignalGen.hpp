@@ -1,4 +1,4 @@
-// ====================================================================== 
+// ======================================================================
 // \title  SignalGen.hpp
 // \author bocchino
 // \brief  hpp file for SequenceFileLoader component implementation class
@@ -7,11 +7,11 @@
 // Copyright (C) 2009-2016 California Institute of Technology.
 // ALL RIGHTS RESERVED.  United States Government Sponsorship
 // acknowledged.
-// 
-// ====================================================================== 
+//
+// ======================================================================
 
-#ifndef Svc_SignalGen_HPP
-#define Svc_SignalGen_HPP
+#ifndef Reference_SignalGen_HPP
+#define Reference_SignalGen_HPP
 
 #include <Fw/Types/ByteArray.hpp>
 #include <Fw/Types/ConstByteArray.hpp>
@@ -26,10 +26,8 @@ namespace Reference {
     public SignalGenComponentBase
   {
 
-    typedef enum { TRIANGLE, SQUARE, SINE, NOISE } Signal;
-
     private:
-    
+
         void schedIn_handler(
             NATIVE_INT_TYPE portNum, /*!< The port number*/
             NATIVE_UINT_TYPE context /*!< The call order*/
@@ -38,9 +36,10 @@ namespace Reference {
         void SignalGen_Settings_cmdHandler(
         FwOpcodeType opCode, /*!< The opcode*/
         U32 cmdSeq, /*!< The command sequence number*/
-        U32 Frequency, 
-        U32 Amplitude, 
-        U32 Phase
+        U32 Frequency,
+        F32 Amplitude,
+        F32 Phase,
+        Reference::SignalType SigType
         );
 
         void SignalGen_Toggle_cmdHandler(
@@ -48,6 +47,10 @@ namespace Reference {
             U32 cmdSeq /*!< The command sequence number*/
         );
         void SignalGen_Skip_cmdHandler(
+        FwOpcodeType opCode, /*!< The opcode*/
+        U32 cmdSeq /*!< The command sequence number*/
+        );
+        void SignalGen_GenerateArray_cmdHandler(
         FwOpcodeType opCode, /*!< The opcode*/
         U32 cmdSeq /*!< The command sequence number*/
         );
@@ -65,19 +68,25 @@ namespace Reference {
             const NATIVE_INT_TYPE queueDepth, //!< The queue depth
             const NATIVE_INT_TYPE instance //!< The instance number
         );
-    
+
         //! Destroy a SignalGen
-        ~SignalGen(void);
-    
+        ~SignalGen();
+
     private:
-        bool RUNNING;
-        bool SKIP_NEXT;
+        // Generate the next sample internal helper
+        F32 generateSample(U32 ticks);
+
+        // Member variables
         U32 sampleFrequency;
         U32 signalFrequency;
-        U32 signalAmplitude;
-        U32 signalPhase;
-        U32 sample;
-        Signal SignalType;      
+        F32 signalAmplitude;
+        F32 signalPhase;
+        U32 ticks;
+        SignalType sigType;
+        SignalSet sigHistory;
+        SignalPairSet sigPairHistory;
+        bool running;
+        bool skipOne;
 
   };
 };

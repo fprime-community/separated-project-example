@@ -1,22 +1,17 @@
-#include <Reference/SendBuffApp/SendBuffComponentImpl.hpp>
+#include <Reference/SendBuffApp/SendBuff.hpp>
 #include <Fw/Types/BasicTypes.hpp>
 #include <Fw/Types/Assert.hpp>
 #include <Os/Log.hpp>
-#include <string.h>
+#include <cstring>
 
-#include <stdio.h>
+#include <cstdio>
 
 #define DEBUG_LEVEL 1
 
 namespace Reference {
 
-#if FW_OBJECT_NAMES == 1    
-    SendBuffImpl::SendBuffImpl(const char* compName) :
+    SendBuff::SendBuff(const char* compName) :
         SendBuffComponentBase(compName) {
-#else
-    SendBuffImpl::SendBuffImpl() {
-
-#endif
         this->m_currPacketId = 0;
         this->m_invocations = 0;
         this->m_buffsSent = 0;
@@ -25,18 +20,18 @@ namespace Reference {
         this->m_sendPackets = false;
         this->m_currPacketId = 0;
         this->m_firstPacketSent = false;
-        this->m_state = SEND_IDLE;
+        this->m_state = SendBuff_ActiveState::SEND_IDLE;
     }
 
-    SendBuffImpl::~SendBuffImpl(void) {
+    SendBuff::~SendBuff() {
 
     }
-    
-    void SendBuffImpl::init(NATIVE_INT_TYPE queueDepth, NATIVE_INT_TYPE instance) {
+
+    void SendBuff::init(NATIVE_INT_TYPE queueDepth, NATIVE_INT_TYPE instance) {
         SendBuffComponentBase::init(queueDepth,instance);
     }
 
-    void SendBuffImpl::SchedIn_handler(NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) {
+    void SendBuff::SchedIn_handler(NATIVE_INT_TYPE portNum, NATIVE_UINT_TYPE context) {
 
         // first, dequeue any messages
 
@@ -93,8 +88,8 @@ namespace Reference {
         this->tlmWrite_SendState(this->m_state);
     }
 
-    void SendBuffImpl::toString(char* str, I32 buffer_size) {
-#if FW_OBJECT_NAMES == 1    
+    void SendBuff::toString(char* str, I32 buffer_size) {
+#if FW_OBJECT_NAMES == 1
         (void) snprintf(str, buffer_size, "Send Buff Component: %s: count: %d Buffs: %d", this->m_objName,
                         (int) this->m_invocations, (int) this->m_buffsSent);
         str[buffer_size-1] = 0;
@@ -105,18 +100,18 @@ namespace Reference {
     }
 
 
-    void SendBuffImpl::SB_START_PKTS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
+    void SendBuff::SB_START_PKTS_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
         this->m_sendPackets = true;
-        this->m_state = SEND_ACTIVE;
-        this->cmdResponse_out(opCode,cmdSeq,Fw::COMMAND_OK);
+        this->m_state = SendBuff_ActiveState::SEND_ACTIVE;
+        this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
     }
 
-    void SendBuffImpl::SB_INJECT_PKT_ERROR_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
+    void SendBuff::SB_INJECT_PKT_ERROR_cmdHandler(FwOpcodeType opCode, U32 cmdSeq) {
         this->m_injectError = true;
-        this->cmdResponse_out(opCode,cmdSeq,Fw::COMMAND_OK);
+        this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
     }
 
-    void SendBuffImpl::SB_GEN_FATAL_cmdHandler(
+    void SendBuff::SB_GEN_FATAL_cmdHandler(
             FwOpcodeType opCode, /*!< The opcode*/
             U32 cmdSeq, /*!< The command sequence number*/
             U32 arg1, /*!< First FATAL Argument*/
@@ -124,12 +119,12 @@ namespace Reference {
             U32 arg3 /*!< Third FATAL Argument*/
         ) {
         this->log_FATAL_SendBuffFatal(arg1,arg2,arg3);
-        this->cmdResponse_out(opCode,cmdSeq,Fw::COMMAND_OK);
+        this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
     }
 
         //! Handler for command SB_GEN_ASSERT
         /* Generate an ASSERT */
-     void SendBuffImpl::SB_GEN_ASSERT_cmdHandler(
+     void SendBuff::SB_GEN_ASSERT_cmdHandler(
             FwOpcodeType opCode, /*!< The opcode*/
             U32 cmdSeq, /*!< The command sequence number*/
             U32 arg1, /*!< First ASSERT Argument*/
@@ -140,10 +135,10 @@ namespace Reference {
             U32 arg6 /*!< Sixth ASSERT Argument*/
         ) {
          FW_ASSERT(0,arg1,arg2,arg3,arg4,arg5,arg6);
-         this->cmdResponse_out(opCode,cmdSeq,Fw::COMMAND_OK);
+         this->cmdResponse_out(opCode,cmdSeq,Fw::CmdResponse::OK);
      }
 
-    void SendBuffImpl::parameterUpdated(FwPrmIdType id) {
+    void SendBuff::parameterUpdated(FwPrmIdType id) {
         this->log_ACTIVITY_LO_BuffSendParameterUpdated(id);
         Fw::ParamValid valid;
         switch(id) {

@@ -1,59 +1,55 @@
-#include <Reference/RecvBuffApp/RecvBuffComponentImpl.hpp>
+#include <Reference/RecvBuffApp/RecvBuff.hpp>
 #include <Fw/Types/BasicTypes.hpp>
 #include <Os/Log.hpp>
 #include <Fw/Types/Assert.hpp>
 
-#include <stdio.h>
+#include <cstdio>
 
 #define DEBUG_LVL 1
 
 namespace Reference {
 
-#if FW_OBJECT_NAMES == 1    
-    RecvBuffImpl::RecvBuffImpl(const char* compName) :
-        RecvBuffComponentBase(compName) {
-#else
-    RecvBuffImpl::RecvBuffImpl() {
-#endif
+    RecvBuff::RecvBuff(const char* compName) :
+            RecvBuffComponentBase(compName) {
         this->m_firstBuffReceived = 0;
         this->m_sensor1 = 1000.0;
         this->m_sensor2 = 10.0;
         this->m_stats.setBuffRecv(0);
         this->m_stats.setBuffErr(0);
-        this->m_stats.setPacketStatus(PACKET_STATE_NO_PACKETS);
+        this->m_stats.setPacketStatus(PacketRecvStatus::PACKET_STATE_NO_PACKETS);
     }
 
 
-    void RecvBuffImpl::init(void) {
-        RecvBuffComponentBase::init();
+    void RecvBuff::init(NATIVE_INT_TYPE instanceId) {
+        RecvBuffComponentBase::init(instanceId);
     }
-    
-    RecvBuffImpl::~RecvBuffImpl(void) {
+
+    RecvBuff::~RecvBuff() {
 
     }
 
-    void RecvBuffImpl::Data_handler(NATIVE_INT_TYPE portNum, Drv::DataBuffer &buff) {
+    void RecvBuff::Data_handler(NATIVE_INT_TYPE portNum, Drv::DataBuffer &buff) {
 
         this->m_stats.setBuffRecv(++this->m_buffsReceived);
         // reset deserialization of buffer
         buff.resetDeser();
         // deserialize packet ID
-        U32 id;
+        U32 id = 0;
         Fw::SerializeStatus stat = buff.deserialize(id);
         FW_ASSERT(stat == Fw::FW_SERIALIZE_OK,static_cast<NATIVE_INT_TYPE>(stat));
         // deserialize data
-        U8 testData[24];
+        U8 testData[24] = {0};
         NATIVE_UINT_TYPE size = sizeof(testData);
         stat = buff.deserialize(testData,size);
         FW_ASSERT(stat == Fw::FW_SERIALIZE_OK,static_cast<NATIVE_INT_TYPE>(stat));
         // deserialize checksum
-        U32 csum;
+        U32 csum = 0;
         stat = buff.deserialize(csum);
         FW_ASSERT(stat == Fw::FW_SERIALIZE_OK,static_cast<NATIVE_INT_TYPE>(stat));
         // if first packet, send event
         if (not this->m_firstBuffReceived) {
             this->log_ACTIVITY_LO_FirstPacketReceived(id);
-            this->m_stats.setPacketStatus(PACKET_STATE_OK);
+            this->m_stats.setPacketStatus(PacketRecvStatus::PACKET_STATE_OK);
             this->m_firstBuffReceived = true;
         }
 
@@ -69,7 +65,7 @@ namespace Reference {
             // send error event
             this->log_WARNING_HI_PacketChecksumError(id);
             // update stats
-            this->m_stats.setPacketStatus(PACKET_STATE_ERRORS);
+            this->m_stats.setPacketStatus(PacketRecvStatus::PACKET_STATE_ERRORS);
         }
         // update sensor values
         this->m_sensor1 += 5.0;
@@ -81,17 +77,17 @@ namespace Reference {
 
     }
 
-    void RecvBuffImpl::toString(char* str, I32 buffer_size) {
-#if FW_OBJECT_NAMES == 1    
-        (void)snprintf(str, buffer_size, "RecvBuffImpl: %s: ATM recd count: %d", this->m_objName,
+    void RecvBuff::toString(char* str, I32 buffer_size) {
+#if FW_OBJECT_NAMES == 1
+        (void)snprintf(str, buffer_size, "RecvBuff: %s: ATM recd count: %d", this->m_objName,
                         (int) this->m_buffsReceived);
 #else
-        (void)snprintf(str, buffer_size, "RecvBuffImpl: ATM recd count: %d",
+        (void)snprintf(str, buffer_size, "RecvBuff: ATM recd count: %d",
                         (int) this->m_buffsReceived);
 #endif
     }
 
-    void RecvBuffImpl::parameterUpdated(FwPrmIdType id) {
+    void RecvBuff::parameterUpdated(FwPrmIdType id) {
         this->log_ACTIVITY_LO_BuffRecvParameterUpdated(id);
         Fw::ParamValid valid;
         switch(id) {

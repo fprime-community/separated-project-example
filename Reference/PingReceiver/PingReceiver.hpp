@@ -1,5 +1,5 @@
-// ====================================================================== 
-// \title  PingReceiverImpl.hpp
+// ======================================================================
+// \title  PingReceiver.hpp
 // \author tim
 // \brief  hpp file for PingReceiver component implementation class
 //
@@ -7,8 +7,8 @@
 // Copyright 2009-2015, by the California Institute of Technology.
 // ALL RIGHTS RESERVED.  United States Government Sponsorship
 // acknowledged.
-// 
-// ====================================================================== 
+//
+// ======================================================================
 
 #ifndef PingReceiver_HPP
 #define PingReceiver_HPP
@@ -17,7 +17,7 @@
 
 namespace Reference {
 
-  class PingReceiverComponentImpl :
+  class PingReceiver :
     public PingReceiverComponentBase
   {
 
@@ -29,12 +29,8 @@ namespace Reference {
 
       //! Construct object PingReceiver
       //!
-      PingReceiverComponentImpl(
-#if FW_OBJECT_NAMES == 1
+      PingReceiver(
           const char *const compName /*!< The component name*/
-#else
-          void
-#endif
       );
 
       //! Initialize object PingReceiver
@@ -46,7 +42,7 @@ namespace Reference {
 
       //! Destroy object PingReceiver
       //!
-      ~PingReceiverComponentImpl(void);
+      ~PingReceiver();
 
     PRIVATE:
 
